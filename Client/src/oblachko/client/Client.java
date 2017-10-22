@@ -1,3 +1,5 @@
+package oblachko.client;
+
 import javax.swing.*;
 
 public class Client {

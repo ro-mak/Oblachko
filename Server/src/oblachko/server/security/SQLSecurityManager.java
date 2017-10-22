@@ -1,3 +1,5 @@
+package oblachko.server.security;
+
 public class SQLSecurityManager implements SecurityManager {
     @Override
     public void init() {

@@ -1,3 +1,8 @@
+package oblachko.server.network;
+
+import oblachko.network.SocketThread;
+import oblachko.network.SocketThreadListener;
+
 import java.net.Socket;
 import java.util.Vector;
 

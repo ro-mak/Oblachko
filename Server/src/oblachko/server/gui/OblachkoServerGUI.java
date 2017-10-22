@@ -1,3 +1,9 @@
+package oblachko.server.gui;
+
+import oblachko.server.network.OblachkoServer;
+import oblachko.server.network.OblachkoServerListener;
+import oblachko.server.security.SQLSecurityManager;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -6,7 +12,7 @@ import java.awt.event.ActionListener;
 
 public class OblachkoServerGUI extends JFrame implements ActionListener, OblachkoServerListener,Thread.UncaughtExceptionHandler{
 
-    private final String TITLE = "OblachkoServer";
+    private final String TITLE = "oblachko.server.network.OblachkoServer";
     private final String START_LISTENING = "Start listening";
     private final String STOP_LISTENING = "Stop listening";
     private final String DROP_ALL_CLIENTS = "Drop all clients";

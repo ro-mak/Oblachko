@@ -1,3 +1,5 @@
+package oblachko.network;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -43,7 +45,7 @@ public class SocketThread extends Thread {
         }
     }
 
-    public synchronized void sendMessage(String message){
+    public synchronized void sendMessage(Object message){
         try {
             objectOutputStream.writeObject(message);
             objectOutputStream.flush();

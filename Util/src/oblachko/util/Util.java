@@ -1,3 +1,5 @@
+package oblachko.util;
+
 import java.awt.*;
 
 public class Util {

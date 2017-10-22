@@ -1,3 +1,5 @@
+package oblachko.network;
+
 import java.net.Socket;
 
 public interface SocketThreadListener {

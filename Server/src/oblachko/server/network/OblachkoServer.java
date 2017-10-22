@@ -1,3 +1,10 @@
+package oblachko.server.network;
+
+import oblachko.network.*;
+import oblachko.server.handlers.DataMessageHandler;
+import oblachko.server.handlers.ServiceMessageHandler;
+import oblachko.server.security.SecurityManager;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.DateFormat;
@@ -10,30 +17,33 @@ public class OblachkoServer implements ServerSocketThreadListener, SocketThreadL
     private final SecurityManager securityManager;
     private ServerSocketThread serverSocketThread;
     private final Vector<SocketThread> clients = new Vector<>();
+    private ServiceMessageHandler serviceMessageHandler;
+    private DataMessageHandler dataMessageHandler;
 
-    public OblachkoServer(OblachkoServerListener oblachkoServerListener,SecurityManager securityManager){
+    public OblachkoServer(OblachkoServerListener oblachkoServerListener, SecurityManager securityManager) {
         this.oblachkoServerListener = oblachkoServerListener;
         this.securityManager = securityManager;
+        this.serviceMessageHandler = new ServiceMessageHandler();
+        this.dataMessageHandler = new DataMessageHandler();
     }
 
-    public void startListening(int port){
-        if(serverSocketThread != null && serverSocketThread.isAlive()) {
-            putLog("OblachkoServer is already launched");
+    public void startListening(int port) {
+        if (serverSocketThread != null && serverSocketThread.isAlive()) {
+            putLog("oblachko.server.network.OblachkoServer is already launched");
             return;
         }
-        serverSocketThread = new ServerSocketThread("ServerSocketThread",port,2000,this);
-        putLog("OblachkoServer has been launched.");
+        serverSocketThread = new ServerSocketThread("oblachko.network.ServerSocketThread", port, 2000, this);
+        putLog("oblachko.server.network.OblachkoServer has been launched.");
         securityManager.init();
     }
 
-    public void dropAllClients(){
+    public void dropAllClients() {
         putLog("drop all clients");
     }
 
-    public void stopListening()
-    {
-        if(serverSocketThread == null || !serverSocketThread.isAlive()){
-            putLog("OblachkoServer is not alive");
+    public void stopListening() {
+        if (serverSocketThread == null || !serverSocketThread.isAlive()) {
+            putLog("oblachko.server.network.OblachkoServer is not alive");
             return;
         }
         serverSocketThread.interrupt();
@@ -41,8 +51,7 @@ public class OblachkoServer implements ServerSocketThreadListener, SocketThreadL
     }
 
 
-
-    //ServerSocketThread
+    //oblachko.network.ServerSocketThread
     @Override
     public void onStartServerSocketThread(ServerSocketThread thread) {
         putLog("started...");
@@ -62,7 +71,7 @@ public class OblachkoServer implements ServerSocketThreadListener, SocketThreadL
     public void onAcceptedSocket(ServerSocketThread thread, ServerSocket serverSocket, Socket socket) {
         putLog("Client connected: " + socket);
         String threadName = "Socket thread: " + socket.getInetAddress() + ":" + socket.getPort();
-        new OblachkoSocketThread(this,threadName,socket);
+        new OblachkoSocketThread(this, threadName, socket);
     }
 
     @Override
@@ -75,16 +84,16 @@ public class OblachkoServer implements ServerSocketThreadListener, SocketThreadL
         putLog("Exception happened " + e.getClass().getName() + ": " + e.getMessage());
     }
 
-    private synchronized void putLog(String message){
-        String messageLog = dateFormat.format(System.currentTimeMillis())+": " + message;
-        if(oblachkoServerListener != null) oblachkoServerListener.onOblachkoServerLog(this,messageLog);
+    private synchronized void putLog(String message) {
+        String messageLog = dateFormat.format(System.currentTimeMillis()) + ": " + message;
+        if (oblachkoServerListener != null) oblachkoServerListener.onOblachkoServerLog(this, messageLog);
 
     }
 
-    //SocketThread
+    //oblachko.network.SocketThread
     @Override
     public synchronized void onStartSocketThread(SocketThread thread) {
-        putLog("SocketThread started...");
+        putLog("oblachko.network.SocketThread started...");
     }
 
     @Override
@@ -101,21 +110,22 @@ public class OblachkoServer implements ServerSocketThreadListener, SocketThreadL
 
     @Override
     public void onReceiveServiceMessage(SocketThread socketThread, Socket socket, ServiceMessage serviceMessage) {
-
+        OblachkoSocketThread client = (OblachkoSocketThread) socketThread;
+        if (client.isAuthorized()) {
+            serviceMessageHandler.handleAuthorizedClient(client, serviceMessage);
+        } else {
+            serviceMessageHandler.handleNonAuthorizedClient(client, serviceMessage);
+        }
     }
 
     @Override
     public void onReceiveDataMessage(SocketThread socketThread, Socket socket, DataMessage dataMessage) {
-
-    }
-
-
-    private void handleNonAuthorizedClient(OblachkoSocketThread client, DataMessage message){
-
-    }
-
-    private void handleAuthorizedClient(OblachkoSocketThread client,DataMessage message){
-
+        OblachkoSocketThread client = (OblachkoSocketThread) socketThread;
+        if (client.isAuthorized()) {
+            dataMessageHandler.handleAuthorizedClient(client, dataMessage);
+        } else {
+            dataMessageHandler.handleNonAuthorizedClient(client, dataMessage);
+        }
     }
 
     @Override
