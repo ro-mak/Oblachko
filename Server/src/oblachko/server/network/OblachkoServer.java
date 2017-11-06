@@ -131,6 +131,7 @@ public class OblachkoServer implements ServerSocketThreadListener, SocketThreadL
     @Override
     public synchronized void onExceptionSocketThread(SocketThread thread, Socket socket, Exception e) {
         putLog("Exception happened " + e.getClass().getName() + ": " + e.getMessage());
+        e.printStackTrace();
     }
 
 }

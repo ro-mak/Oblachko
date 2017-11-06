@@ -22,11 +22,11 @@ public class OblachkoSocketThread extends SocketThread {
         return nick;
     }
 
-    void authError(){
+    public void authError(){
         close();
     }
 
-    void authorizeAccept(String nick, Vector<String> clients){
+    public void authorizeAccept(String nick, Vector<String> clients){
         this.isAuthorized = true;
         this.nick = nick;
     }

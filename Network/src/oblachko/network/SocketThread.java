@@ -1,5 +1,7 @@
 package oblachko.network;
 
+import oblachko.library.messages.AuthMessage;
+
 import java.io.*;
 import java.net.Socket;
 
